@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 
-import ElectionResultsReducer from './ElectionResultsReducer';
-import WordCloudReducer from './WordCloudReducer';
+import ManifestoBubblesReducer from './ManifestoBubblesReducer';
+import WordSearchReducer from './WordSearchReducer';
 
-export default combineReducers({ electionResults: ElectionResultsReducer, wordCloud: WordCloudReducer });
+
+export default combineReducers({ wordSearch: WordSearchReducer, manifestoBubbles: ManifestoBubblesReducer });

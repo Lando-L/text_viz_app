@@ -33,3 +33,10 @@
 	stroke: white;
 	opacity: .8;
 }
+
+.label {
+    font-weight: 100;
+	stroke: black;
+    stroke-width: 0.2px;
+	opacity: .9
+}

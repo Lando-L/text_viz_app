@@ -3,13 +3,12 @@ import { Map } from 'immutable';
 import { FETCH, FETCH_FAILED, FETCH_SUCCEEDED } from '../actions/actionTypes/AsyncActionTypes';
 
 
-const INIT_STATE = Map({ query: '', status: 'init' });
+const INIT_STATE = Map({ status: 'init' });
 
 export default (state = INIT_STATE, action) => {
 	switch(action.type) {
 		case FETCH:
 			return state
-				.set('query', action.query)
 				.set('status', 'fetching')
 				.delete('data')
 				.delete('error')

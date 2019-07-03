@@ -9,15 +9,16 @@ import BubbleChart from './Charts/BubbleChart';
 class Bubbles extends Component {
 	constructor(props) {
 		super(props);
+		this.state = { selection: 'umap' };
 		this.handleChange = this.handleChange.bind(this);
 	}
 
 	handleChange(event) {
-		this.props.fetchBubbles(event.target.value);
+		this.setState({ selection: event.target.value });
 	}
 
 	componentDidMount() {
-		this.props.fetchBubbles('');
+		this.props.fetchBubbles();
 	}
 
 	render() {
@@ -40,14 +41,21 @@ class Bubbles extends Component {
 
 					<div className="shadow-sm rounded legend">
 						<ul className="list-group">
-							{ this.props.data ? this.props.data.parties.map((party, idx) => (
-								<li key={`legend-${party.key}`} className="list-group-item" style={{ color: colorCodes.get(party.key) }}>
-									<div className="d-flex flex-row align-items-center">
-										<div className="circle mr-3" style={{ background: colorCodes.get(party.key) }}></div>
-										{ party.name }
-									</div>
-								</li>
-							)) : <p>...Loading</p>}
+							{ this.props.data
+								? this.props.data.parties.map((party, idx) => (
+									<li
+										key={`legend-${party.slug}`}
+										className="list-group-item"
+										style={{ color: colorCodes.get(party.slug) }}>
+										
+										<div className="d-flex flex-row align-items-center">
+											<div className="circle mr-3" style={{ background: colorCodes.get(party.slug) }}></div>
+											{ party.name }
+										</div>
+
+									</li>
+								)) : <p>...Loading</p>
+							}
 						</ul>
 					</div>
 				</div>
@@ -58,7 +66,12 @@ class Bubbles extends Component {
 
 				<div className="col d-flex flex-column justify-content-center align-items-center">
 					{ this.props.data
-						? <BubbleChart bubbles={this.props.data.bubbles} width="1000" height="600"/>
+						? <BubbleChart
+							selection={this.state.selection}
+							bubbles={this.props.data.bubbles}
+							width={window.innerWidth}
+							height={window.innerHeight}/>
+
 						: <p>...Loading</p> }
 				</div>
 			</div>

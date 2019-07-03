@@ -1,49 +1,92 @@
-import React from 'react';
+import React, { Component, createRef } from 'react';
 import * as d3 from 'd3';
 
 import colorCodes from '../../utils/colorCodes';
 
 
-const BubbleChart = ({ bubbles, width, height}) => {
-	const x = d3
-		.scaleLinear()
-		.domain([-5, 105])
-		.range([0, width]);
+class BubbleChart extends Component {
+	constructor(props) {
+		super(props);
 
-	const y = d3
-		.scaleLinear()
-		.domain([-5, 105])
-		.range([height, 0]);
+		this.margin = {top: 50, right: 50, bottom: 50, left: 50}
+		
+		this.bubbles = createRef();
+		this.labels = createRef();
 
-	return (
-		<svg width={width} height={height}>
-			<g>
-				{bubbles.map((bubble, idx) => (
-					<circle
-						key={`circle-${idx}`}
-						className={`bubble ${bubble.party}`}
-						cx={x(bubble.x)}
-						cy={y(bubble.y)}
-						r={bubble.size}
-						style={{ fill: colorCodes.get(bubble.party), 'stroke': 'white' }}>
-					</circle>
-				))}
-			</g>
-			<g>
-				{bubbles.map((bubble, idx) => (
-					<text
-						key={`label-${idx}`}
-						className={`label ${bubble.party}`}
-						x={x(bubble.x)}
-						y={y(bubble.y)}
-						textAnchor="left"
-						style={{ fill: colorCodes.get(bubble.party), fontSize: bubble.fontSize }}>
-						2017
-					</text>
-				))}
-			</g>
-		</svg>
-	);
+		this.x = d3.scaleLinear().domain([-5, 105]).range([0, props.width - this.margin.left - this.margin.right])
+		this.y = d3.scaleLinear().domain([-5, 105]).range([props.height - this.margin.top - this.margin.bottom, 0]);
+	}
+
+
+	draw() {
+    	d3
+    		.select(this.bubbles.current)
+    		.selectAll('.bubble')
+    		.data(this.props.bubbles)
+    		.join('circle')
+    		.attr('class', bubble => `bubble ${bubble.party}`)
+      		.attr('cx', bubble => this.x(bubble.x[this.props.selection]))
+      		.attr('cy', bubble => this.y(bubble.y[this.props.selection]))
+      		.attr('r', bubble => bubble.size)
+      		.style('fill', bubble => colorCodes.get(bubble.party));
+
+        d3
+        	.select(this.labels.current)
+        	.selectAll('.label')
+        	.data(this.props.bubbles)
+			.join('text')
+			.attr('class', bubble => `label ${bubble.party}`)
+			.attr('x', bubble => this.x(bubble.x[this.props.selection]))
+      		.attr('y', bubble => this.y(bubble.y[this.props.selection]))
+			.attr('font-size', bubble => bubble.fontsize)
+			.attr('text-anchor', 'left')
+			.style('fill', bubble => colorCodes.get(bubble.party))
+			.text(bubble => bubble.year);
+	}
+
+	update() {
+		d3
+			.select(this.bubbles.current)
+			.selectAll('.bubble')
+			.data(this.props.bubbles)
+			.join()
+			.transition()
+			.duration(1000)
+			.attr('cx', bubble => this.x(bubble.x[this.props.selection]))
+      		.attr('cy', bubble => this.y(bubble.y[this.props.selection]))
+
+  		d3
+			.select(this.labels.current)
+			.selectAll('.label')
+			.data(this.props.bubbles)
+			.join()
+			.transition()
+			.duration(1000)
+			.attr('x', bubble => this.x(bubble.x[this.props.selection]))
+      		.attr('y', bubble => this.y(bubble.y[this.props.selection]))
+	}
+
+
+
+	componentDidMount() {
+		this.draw();
+	}
+
+	componentDidUpdate(prevProps) {
+		if (this.props.selection !== prevProps.selection) {
+			console.log('update');
+			this.update();
+		}
+	}
+
+	render() {
+		return (
+			<svg viewBox={[0, 0, this.props.width, this.props.height]}>
+				<g ref={this.bubbles}></g>
+				<g ref={this.labels}></g>
+			</svg>
+		);
+	}
 }
 
 export default BubbleChart;

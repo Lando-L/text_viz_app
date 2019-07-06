@@ -2,19 +2,19 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import colorCodes from '../utils/colorCodes';
-import ManifestoBubblesContainer from '../containers/ManifestoBubblesContainer';
+import BubblesContainer from '../containers/BubblesContainer';
 import BubbleChart from './Charts/BubbleChart';
+import Slider from './Slider';
 
 
 class Bubbles extends Component {
 	constructor(props) {
 		super(props);
-		this.state = { selection: 'umap' };
 		this.handleChange = this.handleChange.bind(this);
 	}
 
 	handleChange(event) {
-		this.setState({ selection: event.target.value });
+		this.props.selectOption(event.target.value);
 	}
 
 	componentDidMount() {
@@ -28,11 +28,19 @@ class Bubbles extends Component {
 					<div className="shadow-sm rounded">
 						<form>
 							<div className="form-group m-0">
-								<select className="custom-select" onChange={this.handleChange}>
-									<option value="umap">UMAP</option>
-									<option value="tsne">t-SNE</option>
-									<option value="pca">PCA</option>
-								</select>
+									{ this.props.status === 'succeeded'
+										? <select className="custom-select" onChange={this.handleChange}>
+											{ this.props.data.options.map((option, idx) => (
+												<option
+													key={`option-${option.slug}`}
+													value={option.slug}>
+													{ option.label }
+												</option>
+											))}
+										</select>
+
+										: <p>Loading...</p>
+									}
 							</div>
 						</form>
 					</div>
@@ -41,7 +49,7 @@ class Bubbles extends Component {
 
 					<div className="shadow-sm rounded legend">
 						<ul className="list-group">
-							{ this.props.data
+							{ this.props.status === 'succeeded'
 								? this.props.data.parties.map((party, idx) => (
 									<li
 										key={`legend-${party.slug}`}
@@ -49,34 +57,59 @@ class Bubbles extends Component {
 										style={{ color: colorCodes.get(party.slug) }}>
 										
 										<div className="d-flex flex-row align-items-center">
-											<div className="circle mr-3" style={{ background: colorCodes.get(party.slug) }}></div>
-											{ party.name }
+											<div
+												className="circle mr-3"
+												style={{ background: colorCodes.get(party.slug) }}
+											></div>
+											{ party.label }
 										</div>
 
 									</li>
-								)) : <p>...Loading</p>
+								))
+
+								: <p>Loading...</p>
 							}
 						</ul>
 					</div>
 				</div>
 
 				<div className="floating-container float-right">
-					<Link to="/">Home</Link>
+					<Link to="/search">Search</Link>
+				</div>
+
+				<div className="shadow-sm rounded floating-container float-bottom">
+					<form>
+							{ this.props.status === 'succeeded'
+								? <div className="form-group p-3 m-0">
+									<h5 className="text-center">{ this.props.data.years[this.props.year] }</h5>
+									<Slider
+										min="0"
+										max={this.props.data.years.length - 1}
+										update={this.props.selectYear}
+										value={this.props.year}
+										disabled={this.props.data.years.length === 1}/>
+
+								</div>
+
+								: <p>Loading...</p>
+							}
+					</form>
 				</div>
 
 				<div className="col d-flex flex-column justify-content-center align-items-center">
-					{ this.props.data
+					{ this.props.status === 'succeeded'
 						? <BubbleChart
-							selection={this.state.selection}
+							option={this.props.option}
+							year={this.props.data.years[this.props.year]}
 							bubbles={this.props.data.bubbles}
 							width={window.innerWidth}
 							height={window.innerHeight}/>
 
-						: <p>...Loading</p> }
+						: <p>Loading...</p> }
 				</div>
 			</div>
 		);
 	}
 }
 
-export default ManifestoBubblesContainer(Bubbles);
+export default BubblesContainer(Bubbles);

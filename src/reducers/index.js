@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 
-import ManifestoBubblesReducer from './ManifestoBubblesReducer';
-import WordSearchReducer from './WordSearchReducer';
+import BubblesReducer from './BubblesReducer';
+import SearchReducer from './SearchReducer';
 
 
-export default combineReducers({ wordSearch: WordSearchReducer, manifestoBubbles: ManifestoBubblesReducer });
+export default combineReducers({ bubbles: BubblesReducer, search: SearchReducer });

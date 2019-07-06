@@ -18,6 +18,12 @@
 	right: 15px;
 }
 
+.floating-container.float-bottom {
+	bottom: 15px;
+	left: 50%;
+    transform: translate(-50%, 0);
+}
+
 .legend .circle {
 	width: 15px;
 	height: 15px;

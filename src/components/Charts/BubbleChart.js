@@ -25,9 +25,9 @@ class BubbleChart extends Component {
     		.data(this.props.bubbles)
     		.join('circle')
     		.attr('class', bubble => `bubble ${bubble.party}`)
-      		.attr('cx', bubble => this.x(bubble.x[this.props.selection]))
-      		.attr('cy', bubble => this.y(bubble.y[this.props.selection]))
-      		.attr('r', bubble => bubble.size)
+      		.attr('cx', bubble => this.x(bubble.x[this.props.option]))
+      		.attr('cy', bubble => this.y(bubble.y[this.props.option]))
+      		.attr('r', bubble => bubble.size[this.props.year])
       		.style('fill', bubble => colorCodes.get(bubble.party));
 
         d3
@@ -36,12 +36,12 @@ class BubbleChart extends Component {
         	.data(this.props.bubbles)
 			.join('text')
 			.attr('class', bubble => `label ${bubble.party}`)
-			.attr('x', bubble => this.x(bubble.x[this.props.selection]))
-      		.attr('y', bubble => this.y(bubble.y[this.props.selection]))
+			.attr('x', bubble => this.x(bubble.x[this.props.option]))
+      		.attr('y', bubble => this.y(bubble.y[this.props.option]))
 			.attr('font-size', bubble => bubble.fontsize)
 			.attr('text-anchor', 'left')
 			.style('fill', bubble => colorCodes.get(bubble.party))
-			.text(bubble => bubble.year);
+			.text(bubble => bubble.label);
 	}
 
 	update() {
@@ -52,8 +52,9 @@ class BubbleChart extends Component {
 			.join()
 			.transition()
 			.duration(1000)
-			.attr('cx', bubble => this.x(bubble.x[this.props.selection]))
-      		.attr('cy', bubble => this.y(bubble.y[this.props.selection]))
+			.attr('cx', bubble => this.x(bubble.x[this.props.option]))
+      		.attr('cy', bubble => this.y(bubble.y[this.props.option]))
+      		.attr('r', bubble => bubble.size[this.props.year]);
 
   		d3
 			.select(this.labels.current)
@@ -62,8 +63,9 @@ class BubbleChart extends Component {
 			.join()
 			.transition()
 			.duration(1000)
-			.attr('x', bubble => this.x(bubble.x[this.props.selection]))
-      		.attr('y', bubble => this.y(bubble.y[this.props.selection]))
+			.attr('x', bubble => this.x(bubble.x[this.props.option]))
+      		.attr('y', bubble => this.y(bubble.y[this.props.option]))
+      		.attr('r', bubble => bubble.size[this.props.year]);
 	}
 
 
@@ -73,8 +75,7 @@ class BubbleChart extends Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		if (this.props.selection !== prevProps.selection) {
-			console.log('update');
+		if (this.props.option !== prevProps.option || this.props.year !== prevProps.year) {
 			this.update();
 		}
 	}

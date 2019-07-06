@@ -7,9 +7,8 @@ class Slider extends React.Component {
 		this.handleChange = this.handleChange.bind(this);
 	}
 
-	handleChange(e) {
-		e.preventDefault();
-		this.props.update(e.target.value);
+	handleChange(event) {
+		this.props.update(event.target.value);
 	}
 
 	render() {
@@ -20,7 +19,8 @@ class Slider extends React.Component {
 				min={this.props.min}
 				max={this.props.max}
 				onChange={this.handleChange}
-				value={this.props.value}/>
+				value={this.props.value}
+				disabled={this.props.disabled}/>
 		)
 	}
 }

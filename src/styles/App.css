@@ -8,18 +8,23 @@
 	z-index: 9;
 }
 
-.floating-container.float-left {
+.floating-container.float-top {
 	top: 15px;
-	left: 15px;
 }
 
 .floating-container.float-right {
-	top: 15px;
 	right: 15px;
 }
 
 .floating-container.float-bottom {
 	bottom: 15px;
+}
+
+.floating-container.float-left {
+	left: 15px;
+}
+
+.floating-container.float-center {
 	left: 50%;
     transform: translate(-50%, 0);
 }

@@ -31,7 +31,7 @@ class SearchResults extends Component {
 	render() {
 		return (
 			<div className="row h-100">
-				<div className="shadow-sm rounded floating-container float-left">
+				<div className="shadow-sm rounded floating-container float-top float-left">
 
 					<form onSubmit={this.handleSubmit}>
 						<div className="input-group">
@@ -72,7 +72,7 @@ class SearchResults extends Component {
 					</form>
 				</div>
 
-				<div className="floating-container float-right">
+				<div className="floating-container float-top float-right">
 					<Link to="/bubbles">Overview</Link>
 				</div>
 

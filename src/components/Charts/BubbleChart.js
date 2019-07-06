@@ -10,6 +10,7 @@ class BubbleChart extends Component {
 
 		this.margin = {top: 50, right: 50, bottom: 50, left: 50}
 		
+		this.group = createRef();
 		this.bubbles = createRef();
 		this.labels = createRef();
 
@@ -83,8 +84,10 @@ class BubbleChart extends Component {
 	render() {
 		return (
 			<svg viewBox={[0, 0, this.props.width, this.props.height]}>
-				<g ref={this.bubbles}></g>
-				<g ref={this.labels}></g>
+				<g ref={this.group} transform={`matrix(${this.props.matrix.join(' ')})`}>
+					<g ref={this.bubbles}></g>
+					<g ref={this.labels}></g>
+				</g>
 			</svg>
 		);
 	}

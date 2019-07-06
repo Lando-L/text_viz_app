@@ -10,12 +10,48 @@ import Slider from './Slider';
 class Bubbles extends Component {
 	constructor(props) {
 		super(props);
-		this.handleChange = this.handleChange.bind(this);
+		
+		this.state = { matrix: [1, 0, 0, 1, 0, 0] };
+
+		this.width = window.innerWidth;
+		this.height = window.innerHeight;
+
+		this.handleOptionChange = this.handleOptionChange.bind(this);
+		this.handleZoomIn = this.handleZoomIn.bind(this);
+		this.handleZoomOut = this.handleZoomOut.bind(this);
+		this.handleScroll = this.handleScroll.bind(this);
 	}
 
-	handleChange(event) {
+	handleOptionChange(event) {
 		this.props.selectOption(event.target.value);
 	}
+
+	handleScroll(detail, view) {
+		console.log(detail);
+		console.log(view);
+	}
+
+	handleZoomIn(event) {
+		if (this.state.matrix[0] < 3 && this.state.matrix[3]  < 3) {
+			this.handleZoomLevelChange(1.25);
+		}
+	}
+
+	handleZoomOut(event) {
+		if (this.state.matrix[0] > .25 && this.state.matrix[3] > .25) {
+			this.handleZoomLevelChange(0.8);
+		}
+	}
+
+	handleZoomLevelChange(scale) {
+		let matrix = this.state.matrix;
+
+		matrix = matrix.map(x => x * scale);
+		matrix[4] += (1 - scale) * this.width / 2;
+		matrix[5] += (1 - scale) * this.height / 2;
+
+		this.setState({ matrix });
+	}	
 
 	componentDidMount() {
 		this.props.fetchBubbles();
@@ -24,12 +60,12 @@ class Bubbles extends Component {
 	render() {
 		return (
 			<div className="row h-100">
-				<div className="floating-container float-left">
+				<div className="floating-container float-top float-left">
 					<div className="shadow-sm rounded">
 						<form>
 							<div className="form-group m-0">
 									{ this.props.status === 'succeeded'
-										? <select className="custom-select" onChange={this.handleChange}>
+										? <select className="custom-select" onChange={this.handleOptionChange}>
 											{ this.props.data.options.map((option, idx) => (
 												<option
 													key={`option-${option.slug}`}
@@ -73,11 +109,11 @@ class Bubbles extends Component {
 					</div>
 				</div>
 
-				<div className="floating-container float-right">
+				<div className="floating-container float-top float-right">
 					<Link to="/search">Search</Link>
 				</div>
 
-				<div className="shadow-sm rounded floating-container float-bottom">
+				<div className="shadow-sm rounded floating-container float-bottom float-center">
 					<form>
 							{ this.props.status === 'succeeded'
 								? <div className="form-group p-3 m-0">
@@ -96,14 +132,20 @@ class Bubbles extends Component {
 					</form>
 				</div>
 
-				<div className="col d-flex flex-column justify-content-center align-items-center">
+				<div className="floating-container float-bottom float-right">
+					<button className="btn btn-info" onClick={this.handleZoomIn}>+</button>
+					<button className="btn btn-info" onClick={this.handleZoomOut}>-</button>
+				</div>
+
+				<div className="col d-flex flex-column justify-content-center align-items-center" onScroll={this.onScroll}>
 					{ this.props.status === 'succeeded'
 						? <BubbleChart
 							option={this.props.option}
 							year={this.props.data.years[this.props.year]}
 							bubbles={this.props.data.bubbles}
 							width={window.innerWidth}
-							height={window.innerHeight}/>
+							height={window.innerHeight}
+							matrix={this.state.matrix}/>
 
 						: <p>Loading...</p> }
 				</div>

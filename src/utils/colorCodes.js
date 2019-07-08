@@ -5,7 +5,7 @@ const colorCodes = new Map([
 	["gruene", "rgb(70,150,43)"],
 	["afd", "rgb(0,158,224)"],
 	["spd", "rgb(227,0,15)"],
-	["sonstige", "rgb(170,170,170)"]
+	["none", "rgb(170,170,170)"]
 ]);
 
 export default colorCodes;

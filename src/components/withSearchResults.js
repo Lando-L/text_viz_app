@@ -6,8 +6,8 @@ const withSearchResults = (WrappedComponent, idx) => {
 	return class extends Component {
 
 		domains = [
-			{ slug: 'word', label: 'Word' },
-			{ slug: 'party', label: 'Party' }
+			{ slug: 'words', label: 'Word' },
+			{ slug: 'parties', label: 'Party' }
 		]
 
 		constructor(props) {
@@ -32,13 +32,13 @@ const withSearchResults = (WrappedComponent, idx) => {
 
 		componentDidMount() {
 			if (this.props.match.params.q) {
-				this.props.fetchQuery(this.props.match.params.q, this.domains[idx].slug);
+				this.props.fetchQuery(this.props.match.params.q);
 			}
 		}
 
 		componentDidUpdate(prevProps) {
 			if (this.props.match.params.q !== prevProps.match.params.q) {
-				this.props.fetchQuery(this.props.match.params.q, this.domains[idx].slug);
+				this.props.fetchQuery(this.props.match.params.q);
 			}
 		}
 

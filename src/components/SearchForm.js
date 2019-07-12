@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import SearchContainer from '../containers/SearchContainer';
-
 
 class SearchForm extends Component {
 	constructor(props) {
@@ -45,8 +43,8 @@ class SearchForm extends Component {
 						</div>
 
 						<div>
-							<button className="btn btn-info mr-3" onClick={this.handleSubmit("word")}>Word Search</button>
-							<button className="btn btn-info ml-3" onClick={this.handleSubmit("party")}>Party Search</button>
+							<button className="btn btn-info mr-3" onClick={this.handleSubmit("words")}>Word Search</button>
+							<button className="btn btn-info ml-3" onClick={this.handleSubmit("parties")}>Party Search</button>
 						</div>
 					</form>
 				</div>
@@ -55,4 +53,4 @@ class SearchForm extends Component {
 	}
 }
 
-export default SearchContainer(SearchForm);
+export default SearchForm;

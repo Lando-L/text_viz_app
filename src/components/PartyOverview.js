@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { Set } from 'immutable';
 
 import colorCodes from '../utils/colorCodes';
 import PartiesContainer from '../containers/PartiesContainer';
@@ -14,17 +15,24 @@ class PartyOverview extends Component {
 	constructor(props) {
 		super(props);
 		this.handleOptionChange = this.handleOptionChange.bind(this);
+
+		this.state = { option: 0, selected: Set() }
 	}
 
 	handleOptionChange(event) {
 		event.preventDefault();
-		this.props.selectOption(event.target.value)
+		this.setState({ option: event.target.value });
 	}
 
-	handlePartiesChange(party) {
+	handlePartiesChange(idx) {
 		return event => {
 			event.preventDefault();
-			this.props.toggleHighlighting(party)
+
+			if (this.state.selected.has(idx)) {
+				this.setState({ selected: this.state.selected.delete(idx) });
+			} else {
+				this.setState({ selected: this.state.selected.add(idx) });
+			}
 		}
 	}
 
@@ -32,20 +40,24 @@ class PartyOverview extends Component {
 		this.props.fetchParties();
 	}
 
-	render() {
+	componentDidUpdate(prevProps) {
+		if (this.props.data !== prevProps.data)
+			this.setState({ option: 0, selected: Set(this.props.data.parties.map(party => party.slug)) });
+	}
 
+	render() {
 		return (
 			<div className="row">
 				<div className="floating-container float-top float-left">
 					<div className="shadow-sm rounded">
 						<form>
 							<div className="form-group m-0">
-									{ this.props.options
+									{ this.props.status === 'succeeded'
 										? <select className="custom-select" onChange={this.handleOptionChange}>
-											{ this.props.options.map((option, idx) => (
+											{ this.props.data.options.map((option, idx) => (
 												<option
 													key={`option-${option.slug}`}
-													value={option.slug}>
+													value={idx}>
 													{ option.label }
 												</option>
 											))}
@@ -61,14 +73,14 @@ class PartyOverview extends Component {
 
 					<div className="shadow-sm rounded legend">
 						<ul className="list-group">
-							{ this.props.parties
-								? this.props.parties.map((party, idx) => (
+							{ this.props.status === 'succeeded'
+								? this.props.data.parties.map((party, idx) => (
 									<li
 										key={`legend-${party.slug}`}
 										className="list-group-item"
 										style={{
 											color: colorCodes.get(party.slug),
-											opacity: this.props.highlight.has(party.slug) ? 1 : 0.1
+											opacity: this.state.selected.has(party.slug) ? 1 : 0.1
 										}}
 										onClick={this.handlePartiesChange(party.slug)}>
 										
@@ -98,10 +110,10 @@ class PartyOverview extends Component {
 						? <TimeLineChart
 							width={this.width}
 							height={this.height}
-							data={PartyOverview.selectOption(this.props.option)(this.props.data)}
-							domainX={[0, this.props.years.length]}
-							domainY={PartyOverview.selectDomain(this.props.option, [0, 1])(this.props.options)}
-							highlight={this.props.highlight}/>
+							data={PartyOverview.selectOption(this.props.data.options[this.state.option].slug)(this.props.data.data)}
+							domainX={[0, this.props.data.years.length]}
+							domainY={PartyOverview.selectDomain(this.props.data.options[this.state.option].slug, [0, 1])(this.props.data.options)}
+							selected={this.state.selected}/>
 						: <p>Loading...</p>
 					}
 				</div>

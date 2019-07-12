@@ -139,7 +139,7 @@ class BubbleChart extends Component {
 	}
 
 	handleDoubleClick(bubble) {
-		this.props.history.push(`/search/word/${bubble.label}`);
+		this.props.history.push(`/search/words/${bubble.label}`);
 	}
 
 	handleZoom() {

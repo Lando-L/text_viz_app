@@ -3,6 +3,14 @@
 	height: 30px;
 }
 
+.spacer.spacer-2 {
+	height: 60px;
+}
+
+.spacer.spacer-3 {
+	height: 90px;
+}
+
 .floating-container {
 	position: absolute;
 	z-index: 9;
@@ -65,4 +73,8 @@
 .word-search .usages input[type="range"] {
 	height: 75px;
 	transform: rotate(90deg);
+}
+
+.party-search .results .shadow-sm.rounded {
+	width: 300px;
 }

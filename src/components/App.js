@@ -18,8 +18,8 @@ const App = () => (
 			<Route path="/bubbles" exact component={Bubbles}/>
             <Route path="/overview" exact component={Overview}/>
             <Route path="/parties" exact component={PartyOverview}/>
-            <Route path="/search/word/:q" component={SearchWordResults}/>
-			<Route path="/search/party/:q" component={SearchPartyResults}/>
+            <Route path="/search/words/:q" component={SearchWordResults}/>
+			<Route path="/search/parties/:q" component={SearchPartyResults}/>
 			<Route path="/search" exact component={SearchForm}/>
             <Route path="/" exact component={Home}/>
         </div>

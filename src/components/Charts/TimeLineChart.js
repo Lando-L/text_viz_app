@@ -47,7 +47,7 @@ class TimeLineChart extends Component {
 			.join('path')
 			.attr('class', datum => `line ${datum.party}`)
 			.attr('stroke', datum => colorCodes.get(datum.party))
-			.style('opacity', datum => this.props.highlight.has(datum.party) ? 1 : .1)
+			.style('opacity', datum => this.props.selected.has(datum.party) ? 1 : .1)
 			.transition()
 			.duration(1000)
 			.attr('d', datum => line(datum.scores));
@@ -58,7 +58,7 @@ class TimeLineChart extends Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		if (this.props.data !== prevProps.data || this.props.highlight !== prevProps.highlight)
+		if (this.props.data !== prevProps.data || this.props.selected !== prevProps.selected)
 			this.draw();
 	}
 

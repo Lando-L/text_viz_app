@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 
-import { fetchQuery } from '../actions/SearchActions';
+import { fetchQuery } from '../actions/PartySearchActions';
 
 
-const mapStateToProps = state => state.search.toJS();
+const mapStateToProps = state => state.party.toJS();
 
 const mapDispatchToProps = { fetchQuery };
 

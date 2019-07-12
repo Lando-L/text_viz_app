@@ -12,40 +12,43 @@ class SimpleLineChart extends Component {
 		this.group = createRef();
 		this.xAxis = createRef();
 		this.yAxis = createRef();
+	}
 
-		this.xScale = d3
+	draw() {
+		const xScale = d3
 			.scaleTime()
 			.domain(this.props.domainX)
 			.range([0, this.props.width - this.margin.left - this.margin.right]);
 		
-		this.yScale = d3
+		const yScale = d3
 			.scaleLinear()
 			.domain(this.props.domainY)
-			.range([props.height - this.margin.top - this.margin.bottom, 0]);
+			.range([this.props.height - this.margin.top - this.margin.bottom, 0]);
 
-		this.line = d3
+		const line = d3
 			.line()
-			.x((datum, idx) => this.xScale(idx))
-			.y(datum => this.yScale(datum.y))
-			.curve(d3.curveMonotoneX);
-	}
+			.x((datum, idx) => xScale(idx))
+			.y(datum => yScale(datum.y))
+			//.curve(d3.curveMonotoneX);
 
-	draw() {
 		d3
 			.select(this.xAxis.current)
-			.call(d3.axisBottom(this.xScale).tickFormat(d3.timeFormat("%Y")));
+			.call(d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y")));
 
 		d3
 			.select(this.yAxis.current)
-			.call(d3.axisLeft(this.yScale));
+			.call(d3.axisLeft(yScale));
 		
 		
 		d3
 			.select(this.group.current)
-			.append('path')
-			.datum(this.props.data)
+			.selectAll('.line')
+			.data([this.props.data])
+			.join('path')
 			.attr('class', 'line')
-			.attr('d', this.line);
+			.transition()
+			.duration(1000)
+			.attr('d', line);
 	}
 
 	componentDidMount() {
@@ -67,14 +70,6 @@ class SimpleLineChart extends Component {
 			</svg>
 		);
 	}
-}
-
-SimpleLineChart.defaultProps = {
-	data: Array.from(Array(10).keys()).map(idx => ({ x: idx, y: d3.randomUniform(1)() })),
-	domainX: [0, 9],
-	domainY: [0, 1],
-	width: 600,
-	height: 400
 }
 
 export default SimpleLineChart;

@@ -1,14 +1,10 @@
 import { connect } from 'react-redux';
 
-import { selectDomain, fetchQuery } from '../actions/SearchActions';
+import { fetchQuery } from '../actions/WordSearchActions';
 
 
-const mapStateToProps = () => ({});
-const mapDispatchToProps = {
-	search: query => {
-		selectDomain(0);
-		fetchQuery(query)
-	}
-};
+const mapStateToProps = state => state.word.toJS();
+
+const mapDispatchToProps = { fetchQuery }
 
 export default connect(mapStateToProps, mapDispatchToProps);

@@ -1,11 +1,12 @@
 import { Map } from 'immutable';
 
 import {
-	SELECT_OPTION,
-	SELECT_YEAR,
-	FETCH_BUBBLES,
-	FETCH_BUBBLES_FAILED,
-	FETCH_BUBBLES_SUCCEEDED
+	BUBBLES_SELECT_OPTION,
+	BUBBLES_SELECT_YEAR,
+	BUBBLES_TOGGLE_HIGHLIGHTING,
+	BUBBLES_FETCH,
+	BUBBLES_FETCH_FAILED,
+	BUBBLES_FETCH_SUCCEEDED
 } from '../actions/actionTypes/BubblesActionTypes';
 
 
@@ -13,15 +14,21 @@ const INIT_STATE = Map({ status: 'init' });
 
 export default (state = INIT_STATE, action) => {
 	switch(action.type) {
-		case SELECT_OPTION:
+		case BUBBLES_SELECT_OPTION:
 			return state
 				.set('option', action.option);
 
-		case SELECT_YEAR:
+		case BUBBLES_SELECT_YEAR:
 			return state
-				.set('year', action.year);			
+				.set('year', action.year);
 
-		case FETCH_BUBBLES:
+		case BUBBLES_TOGGLE_HIGHLIGHTING:
+			if (state.get('highlight'))
+				return state.delete('highlight');
+			else
+				return state.set('highlight', action.party);
+
+		case BUBBLES_FETCH:
 			return state
 				.set('status', 'fetching')
 				.delete('data')
@@ -30,14 +37,14 @@ export default (state = INIT_STATE, action) => {
 				.delete('option')
 				.delete('year');
 		
-		case FETCH_BUBBLES_FAILED:
+		case BUBBLES_FETCH_FAILED:
 			return state
 				.set('status', 'failed')
 				.delete('data')
 				.set('error', action.error)
 				.set('receivedAt', action.receivedAt);
 		
-		case FETCH_BUBBLES_SUCCEEDED:
+		case BUBBLES_FETCH_SUCCEEDED:
 			return state
 				.set('status', 'succeeded')
 				.set('data', action.data)

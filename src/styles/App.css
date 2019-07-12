@@ -37,17 +37,32 @@
 
 .legend .list-group-item {
 	border: none;
+	cursor: pointer;
 }
 
-.bubble {
+.bubble-chart .bubble {
 	stroke-width: 1px;
 	stroke: white;
 	opacity: .8;
 }
 
-.label {
+.bubble-chart .label {
     font-weight: 100;
 	stroke: black;
     stroke-width: 0.2px;
 	opacity: .9
+}
+
+.line-chart .line {
+	fill: none;
+    stroke-width: 3;
+}
+
+.line-chart.line-chart-simple .line {
+	stroke: #ffab00;
+}
+
+.word-search .usages input[type="range"] {
+	height: 75px;
+	transform: rotate(90deg);
 }

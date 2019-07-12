@@ -1,4 +1,5 @@
 import React, { Component, createRef } from 'react';
+import { withRouter } from 'react-router-dom';
 import * as d3 from 'd3';
 
 import colorCodes from '../../utils/colorCodes';
@@ -7,21 +8,30 @@ import colorCodes from '../../utils/colorCodes';
 class BubbleChart extends Component {
 	constructor(props) {
 		super(props);
-
-		this.margin = {top: 50, right: 50, bottom: 50, left: 50}
 		
-		this.group = createRef();
+		// SVG references
+		this.view = createRef();
 		this.bubbles = createRef();
 		this.labels = createRef();
 
-		this.x = d3.scaleLinear().domain([-5, 105]).range([0, props.width - this.margin.left - this.margin.right]);
-		this.y = d3.scaleLinear().domain([-5, 105]).range([props.height - this.margin.top - this.margin.bottom, 0]);
-
-		this.state = { highlighting: false };
-
+		// Function bindings
 		this.highlight = this.highlight.bind(this);
 		this.undoHighlighting = this.undoHighlighting.bind(this);
 		this.handleClick = this.handleClick.bind(this);
+		this.handleDoubleClick = this.handleDoubleClick.bind(this);
+		this.handleZoom = this.handleZoom.bind(this);
+		
+		// Scales
+		this.xScale = d3.scaleLinear().domain([-5, 105]).range([0, props.width]);
+		this.yScale = d3.scaleLinear().domain([-5, 105]).range([props.height, 0]);
+		this.radiusScale = d3.scaleLinear().domain([0, 100]).range([ 0, 40]);
+		this.fontSizeScale = d3.scaleLinear().domain([0, 100]).range([ 0, 40]);
+
+		// Zoom
+		this.zoom = d3.zoom().scaleExtent([.25, 100]).extent([[0, 0], [props.width, props.height]]).on('zoom', this.handleZoom);
+
+		// State
+		this.state = { zoomedScaleX: this.xScale, zoomedScaleY: this.yScale };
 	}
 
 
@@ -32,11 +42,12 @@ class BubbleChart extends Component {
     		.data(this.props.bubbles)
     		.join('circle')
     		.attr('class', bubble => `bubble ${bubble.party[this.props.year]}`)
-      		.attr('cx', bubble => this.x(bubble.x[this.props.option]))
-      		.attr('cy', bubble => this.y(bubble.y[this.props.option]))
-      		.attr('r', bubble => bubble.size[this.props.year])
+      		.attr('cx', bubble => this.state.zoomedScaleX(bubble.x[this.props.option]))
+      		.attr('cy', bubble => this.state.zoomedScaleY(bubble.y[this.props.option]))
+      		.attr('r', bubble => this.radiusScale(bubble.size[this.props.year]))
       		.style('fill', bubble => colorCodes.get(bubble.party[this.props.year]))
-      		.on('click', this.handleClick);
+      		.on('click', this.handleClick)
+      		.on('dblclick', this.handleDoubleClick);
 
         d3
         	.select(this.labels.current)
@@ -44,12 +55,14 @@ class BubbleChart extends Component {
         	.data(this.props.bubbles)
 			.join('text')
 			.attr('class', bubble => `label ${bubble.party[this.props.year]}`)
-			.attr('x', bubble => this.x(bubble.x[this.props.option]))
-      		.attr('y', bubble => this.y(bubble.y[this.props.option]))
+			.attr('x', bubble => this.state.zoomedScaleX(bubble.x[this.props.option]))
+      		.attr('y', bubble => this.state.zoomedScaleY(bubble.y[this.props.option]))
 			.attr('text-anchor', 'left')
+			.attr("font-size", bubble => this.fontSizeScale(bubble.size[this.props.year]))
 			.style('fill', bubble => colorCodes.get(bubble.party[this.props.year]))
 			.text(bubble => bubble.label)
-			.on('click', this.handleClick);
+			.on('click', this.handleClick)
+			.on('dblclick', this.handleDoubleClick);
 	}
 
 	update() {
@@ -61,9 +74,9 @@ class BubbleChart extends Component {
 			.transition()
 			.duration(1000)
 			.attr('class', bubble => `bubble ${bubble.party[this.props.year]}`)
-			.attr('cx', bubble => this.x(bubble.x[this.props.option]))
-      		.attr('cy', bubble => this.y(bubble.y[this.props.option]))
-      		.attr('r', bubble => bubble.size[this.props.year])
+			.attr('cx', bubble => this.state.zoomedScaleX(bubble.x[this.props.option]))
+      		.attr('cy', bubble => this.state.zoomedScaleY(bubble.y[this.props.option]))
+      		.attr('r', bubble => this.radiusScale(bubble.size[this.props.year]))
       		.style('fill', bubble => colorCodes.get(bubble.party[this.props.year]));
 
   		d3
@@ -74,10 +87,10 @@ class BubbleChart extends Component {
 			.transition()
 			.duration(1000)
 			.attr('class', bubble => `label ${bubble.party[this.props.year]}`)
-			.attr('x', bubble => this.x(bubble.x[this.props.option]))
-      		.attr('y', bubble => this.y(bubble.y[this.props.option]))
-      		.attr('r', bubble => bubble.size[this.props.year])
-      		.style('fill', bubble => colorCodes.get(bubble.party[this.props.year]));
+			.attr('x', bubble => this.state.zoomedScaleX(bubble.x[this.props.option]))
+      		.attr('y', bubble => this.state.zoomedScaleY(bubble.y[this.props.option]))
+      		.style('fill', bubble => colorCodes.get(bubble.party[this.props.year]))
+      		.attr("font-size", bubble => this.fontSizeScale(bubble.size[this.props.year]));
 	}
 
 	highlight(bubble) {
@@ -101,7 +114,7 @@ class BubbleChart extends Component {
 			.selectAll(`.${bubble.party[this.props.year]}`)
 			.style('opacity', '0.9');
 
-		this.setState({ highlighting: true });
+		this.props.toggleHighlighting(bubble.party[this.props.year]);
 	}
 
 	undoHighlighting(bubble) {
@@ -115,31 +128,60 @@ class BubbleChart extends Component {
 			.selectAll('.label')
 			.style('opacity', '0.9');
 
-		this.setState({ highlighting: false })
+		this.props.toggleHighlighting(bubble.party[this.props.year]);
 	}
 
 	handleClick(bubble) {
-		if (this.state.highlighting)
+		if (this.props.highlight)
 			this.undoHighlighting(bubble);
 		else
 			this.highlight(bubble);
 	}
 
+	handleDoubleClick(bubble) {
+		this.props.history.push(`/search/word/${bubble.label}`);
+	}
+
+	handleZoom() {
+		const zoomedScaleX = d3.event.transform.rescaleX(this.xScale);
+		const zoomedScaleY = d3.event.transform.rescaleY(this.yScale);
+		
+		d3
+			.select(this.bubbles.current)
+			.selectAll('.bubble')
+			.data(this.props.bubbles)
+			.attr('cx', bubble => zoomedScaleX(bubble.x[this.props.option]))
+      		.attr('cy', bubble => zoomedScaleY(bubble.y[this.props.option]));
+
+
+		d3
+			.select(this.labels.current)
+			.selectAll('.label')
+			.data(this.props.bubbles)
+			.attr('x', bubble => zoomedScaleX(bubble.x[this.props.option]))
+      		.attr('y', bubble => zoomedScaleY(bubble.y[this.props.option]));
+
+  		this.setState({ zoomedScaleX, zoomedScaleY });
+	}
+
 
 	componentDidMount() {
 		this.draw();
+		this.zoom(d3.select(this.view.current));
 	}
 
 	componentDidUpdate(prevProps) {
 		if (this.props.option !== prevProps.option || this.props.year !== prevProps.year) {
 			this.update();
+			this.zoom(d3.select(this.view.current));
 		}
 	}
 
 	render() {
 		return (
-			<svg width={this.props.width} height={this.props.height}>
-				<g ref={this.group}>
+			<svg className="bubble-chart" width={this.props.width} height={this.props.height}>
+				<g>
+					<rect ref={this.view} width={this.props.width} height={this.props.height} style={{ fill: 'none', pointerEvents: 'all' }}></rect>
 					<g ref={this.bubbles}></g>
 					<g ref={this.labels}></g>
 				</g>
@@ -148,4 +190,4 @@ class BubbleChart extends Component {
 	}
 }
 
-export default BubbleChart;
+export default withRouter(BubbleChart);

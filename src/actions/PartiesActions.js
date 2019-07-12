@@ -1,51 +1,45 @@
 import {
-	BUBBLES_SELECT_OPTION,
-	BUBBLES_SELECT_YEAR,
-	BUBBLES_TOGGLE_HIGHLIGHTING,
-	BUBBLES_FETCH,
-	BUBBLES_FETCH_FAILED,
-	BUBBLES_FETCH_SUCCEEDED
-} from './actionTypes/BubblesActionTypes';
+	PARTIES_SELECT_OPTION,
+	PARTIES_TOGGLE_HIGHLIGHTING,
+	PARTIES_FETCH,
+	PARTIES_FETCH_FAILED,
+	PARTIES_FETCH_SUCCEEDED
+} from './actionTypes/PartiesActionTypes';
 
 
 export const selectOption = option => ({
-	type: BUBBLES_SELECT_OPTION,
+	type: PARTIES_SELECT_OPTION,
 	option
 });
 
-export const selectYear = year => ({
-	type: BUBBLES_SELECT_YEAR,
-	year
-});
-
 export const toggleHighlighting = party => ({
-	type: BUBBLES_TOGGLE_HIGHLIGHTING,
+	type: PARTIES_TOGGLE_HIGHLIGHTING,
 	party
 });
 
-export const fetchBubbles = () => {
+export const fetchParties = () => {
 	return dispatch => {
 
 		dispatch(_fetch())
 
-		return fetch('/bubbles')
+		return fetch('/parties')
 			.then(response => response.json(), error => dispatch(_fetchFailed(error)))
 			.then(data => dispatch(_fetchSucceeded(data)));
 	}
 };
 
 const _fetch = () => ({
-	type: BUBBLES_FETCH
+	type: PARTIES_FETCH
 });
 
 const _fetchFailed = error => ({
-	type: BUBBLES_FETCH_FAILED,
+	type: PARTIES_FETCH_FAILED,
 	receivedAt: Date.now(),
 	error
 });
 
 const _fetchSucceeded = data => ({
-	type: BUBBLES_FETCH_SUCCEEDED,
+	type: PARTIES_FETCH_SUCCEEDED,
 	receivedAt: Date.now(),
 	data
 });

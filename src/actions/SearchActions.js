@@ -1,42 +1,36 @@
 import $ from 'jquery';
 
 import { 
-	SELECT_DOMAIN,
-	FETCH_QUERY,
-	FETCH_QUERY_FAILED,
-	FETCH_QUERY_SUCCEEDED
+	QUERY_FETCH,
+	QUERY_FETCH_FAILED,
+	QUERY_FETCH_SUCCEEDED
 } from './actionTypes/SearchActionTypes';
 
-
-export const selectDomain = domain => ({
-	type: SELECT_DOMAIN,
-	domain
-});
 
 export const fetchQuery = (query, domain) => {
 	return dispatch => {
 
 		dispatch(_fetch(query))
 
-		return fetch(`/word/search?${$.param({ q: query, d: domain.parameter })}`)
+		return fetch(`/word/search?${$.param({ q: query, d: domain })}`)
 			.then(response => response.json(), error => dispatch(_fetchFailed(error)))
 			.then(results => dispatch(_fetchSucceeded(results)));
 	}
 };
 
 const _fetch = (query) => ({
-	type: FETCH_QUERY,
+	type: QUERY_FETCH,
 	query
 });
 
 const _fetchFailed = error => ({
-	type: FETCH_QUERY_FAILED,
+	type: QUERY_FETCH_FAILED,
 	receivedAt: Date.now(),
 	error
 });
 
 const _fetchSucceeded = results => ({
-	type: FETCH_QUERY_SUCCEEDED,
+	type: QUERY_FETCH_SUCCEEDED,
 	receivedAt: Date.now(),
 	results
 });

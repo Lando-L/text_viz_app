@@ -1,31 +1,58 @@
-import React from 'react';
+import React, { Component, createRef } from 'react';
 import * as d3 from 'd3';
 
-import colorCodes from '../utils/colorCodes'
-import ElectionResultsContainer from '../containers/ElectionResultsContainer';
+import colorCodes from '../../utils/colorCodes'
 
 
-const PieChart = ({ electionResults, width, height }) => {
-	const names = Array.from(electionResults.keys());
-	const percentages = Array.from(electionResults.values());
+class PieChart extends Component {
+	constructor(props) {
+		super(props);
 
-	const colors = d3.scaleOrdinal(names.map(name => colorCodes.get(name)));
+		this.group = createRef();
 
-	const radius = Math.min(width, height) / 2;
-	const pie = d3.pie();
-	const arc = d3.arc().innerRadius(0).outerRadius(radius);
+		this.radius = Math.min(props.width, props.height) / 2;
+		this.arc = d3.arc().outerRadius(this.radius - 10).innerRadius(0);
+		this.pie = d3.pie().sort(null).value(datum => datum.value);
+	}
 
-	return (
-		<svg width={width} height={height}>
-			<g transform={"translate(" + width / 2 + "," + height / 2 + ")"}>
-				{pie(percentages).map((percentage, i) => (
-					<g key={"arc-" + i} className="arc">
-						<path fill={colors(i)} d={arc(percentage)}></path>
-					</g>
-				))}
-			</g>
-		</svg>
-	);
-};
+	draw() {
+		d3
+			.select(this.group.current)
+			.selectAll('.arc')
+			.data(this.pie(this.props.data))
+			.join('path')
+			.attr('class', 'arc')
+			.attr('d', this.arc)
+			.style('fill', datum => colorCodes.get(datum.data.party));
+	}
 
-export default ElectionResultsContainer(PieChart);
+	componentDidMount() {
+		this.draw();
+	}
+
+	componentDidUpdate(prevProps) {
+		if (this.props.data !== prevProps.data)
+			this.draw();
+	}
+
+	render() {
+		return (
+			<svg width={this.props.width} height={this.props.height}>
+				<g ref={this.group} transform={`translate(${this.props.width / 2},${this.props.height / 2})`}></g>
+			</svg>
+		);
+	}
+}
+
+PieChart.defaultProps = {
+	data: [
+		{ party: 'union', value: 10 },
+		{ party: 'spd', value: 10 },
+		{ party: 'gruene', value: 10 },
+		{ party: 'none', value: 5 }
+	],
+	width: 600,
+	height: 400
+}
+
+export default PieChart;

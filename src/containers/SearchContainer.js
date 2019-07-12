@@ -1,9 +1,10 @@
 import { connect } from 'react-redux';
 
-import { selectDomain, fetchQuery } from '../actions/SearchActions';
+import { fetchQuery } from '../actions/SearchActions';
 
 
 const mapStateToProps = state => state.search.toJS();
-const mapDispatchToProps = { selectDomain, fetchQuery };
+
+const mapDispatchToProps = { fetchQuery };
 
 export default connect(mapStateToProps, mapDispatchToProps);

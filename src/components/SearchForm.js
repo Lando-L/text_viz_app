@@ -19,8 +19,7 @@ class SearchForm extends Component {
 	handleSubmit(domain) {
 		return event => {
 			event.preventDefault();
-			this.props.selectDomain(domain);
-			this.props.history.push(`/search/${this.state.query}`);
+			this.props.history.push(`/search/${domain}/${this.state.query}`);
 		}
 	}
 
@@ -28,7 +27,7 @@ class SearchForm extends Component {
 		return (
 			<div className="row h-100">
 				<div className="floating-container float-right">
-					<Link to="/bubbles">Overview</Link>
+					<Link to="/">Home</Link>
 				</div>
 
 				<div className="col d-flex flex-column justify-content-center align-items-center">
@@ -46,8 +45,8 @@ class SearchForm extends Component {
 						</div>
 
 						<div>
-							<button className="btn btn-info mr-3" onClick={this.handleSubmit(0)}>Word Search</button>
-							<button className="btn btn-info ml-3" onClick={this.handleSubmit(1)}>Party Search</button>
+							<button className="btn btn-info mr-3" onClick={this.handleSubmit("word")}>Word Search</button>
+							<button className="btn btn-info ml-3" onClick={this.handleSubmit("party")}>Party Search</button>
 						</div>
 					</form>
 				</div>
